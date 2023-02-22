@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * This is the root node for creating a command as a tree
  */
-public class CommandTree extends ExecutableCommand<CommandTree> {
+public class CommandTree extends ExecutableCommand<CommandTree> implements ArgumentTreeLike<CommandTree, ArgumentTree> {
 
 	private final List<ArgumentTree> arguments = new ArrayList<>();
 
@@ -19,14 +19,25 @@ public class CommandTree extends ExecutableCommand<CommandTree> {
 		super(commandName);
 	}
 
-	/**
-	 * Create a child branch on the tree
-	 * 
-	 * @param tree the child node
-	 * @return this root node
-	 */
+
+	@Override
+	public ArgumentTreeLike<?, CommandTree> getParent() {
+		return null; // a command node cannot have a parent
+	}
+
+	@Override
+	public void setParent(ArgumentTreeLike<?, CommandTree> parent) {
+		// a command node cannot have a parent
+	}
+
+	@Override
+	public List<ArgumentTree> getArguments() {
+		return arguments;
+	}
+
 	public CommandTree then(final ArgumentTree tree) {
 		this.arguments.add(tree);
+		tree.parent = this;
 		return this;
 	}
 

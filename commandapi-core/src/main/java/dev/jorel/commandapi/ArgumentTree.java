@@ -10,10 +10,11 @@ import java.util.List;
  * This is a base class for arguments, allowing them to behave as tree nodes in
  * a {@link CommandTree}
  */
-public class ArgumentTree extends Executable<ArgumentTree> {
+public class ArgumentTree extends Executable<ArgumentTree> implements ArgumentTreeLike<ArgumentTree, ArgumentTree> {
 
 	final List<ArgumentTree> arguments = new ArrayList<>();
 	final Argument<?> argument;
+	ArgumentTreeLike<?, ArgumentTree> parent;
 
 	/**
 	 * Instantiates an {@link ArgumentTree}. This can only be called if the class
@@ -38,14 +39,25 @@ public class ArgumentTree extends Executable<ArgumentTree> {
 		this.executor = argument.executor;
 	}
 
-	/**
-	 * Create a child branch on this node
-	 * 
-	 * @param tree The child branch
-	 * @return this tree node
-	 */
+	@Override
+	public ArgumentTreeLike<?, ArgumentTree> getParent() {
+		return parent;
+	}
+
+	@Override
+	public void setParent(ArgumentTreeLike<?, ArgumentTree> parent) {
+		this.parent = parent;
+	}
+
+	@Override
+	public List<ArgumentTree> getArguments() {
+		return arguments;
+	}
+
 	public ArgumentTree then(final ArgumentTree tree) {
 		this.arguments.add(tree);
+		tree.setParent(this);
+		tree.parent = this;
 		return this;
 	}
 
@@ -64,5 +76,4 @@ public class ArgumentTree extends Executable<ArgumentTree> {
 		}
 		return executions;
 	}
-
 }
